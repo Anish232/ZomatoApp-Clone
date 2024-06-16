@@ -45,4 +45,4 @@ jobs:
       - name: Image scan
         run: trivy image anish0506/zomato.latest
       - name: run docker container
-        run: sudo docker run -itd -p 3000:3000 --name  anish0506/zomato.latest
+        run: docker run -itd -p 3000:3000 --name  anish0506/zomato.latest
