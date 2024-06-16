@@ -26,7 +26,7 @@ jobs:
         run: |
           docker build -t zomato .
           docker tag zomato anish0506/zomato.latest
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p {{ secrets.DOCKER_TOKEN }}
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p {{ secrets.DOCKERHUB_TOKEN }}
           docker push anish0506/zomato.latest
       - name: trivy scan image
         run: trivy image anish0506/zomato.latest
