@@ -24,19 +24,19 @@ jobs:
         run: trivy fs . > trivyreport.txt
       - name: sudo docker build push
         run: |
-          sudo docker build -t zomato .
-          sudo docker tag zomato anish0506/zomato.latest
-          sudo docker login -u ${{ secrets.DOCKER_USERNMAE }} -p {{ secrets.DOCKER_TOKEN }}
-          sudo docker push anish0506/zomato.latest
+          docker build -t zomato .
+          docker tag zomato anish0506/zomato.latest
+          docker login -u ${{ secrets.DOCKER_USERNMAE }} -p {{ secrets.DOCKER_TOKEN }}
+          docker push anish0506/zomato.latest
       - name: trivy scan image
         run: trivy image anish0506/zomato.latest
   deploy: 
     needs: build-analyse-scan
     runs-on: [self-hosted]
     steps:
-      - name: sudo docker pull
-        run: sudo docker pull anish0506/zomato.latest
+      - name: docker pull
+        run: docker pull anish0506/zomato.latest
       - name: Image scan
         run: trivy image anish0506/zomato.latest
-      - name: run sudo docker container
+      - name: run docker container
         run: sudo docker run -itd -p 3000:3000 --name  anish0506/zomato.latest
