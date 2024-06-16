@@ -1,32 +1,42 @@
-name: build analyze, scan
+name: build analyse, scan
 on:
   push:
     branches:
       - main
 
 jobs:
-  build-analyze-scan:
+  build-analyse-scan:
     name: build
     runs-on: [self-hosted]
     steps:
-      - name: checkout the code
+      - name: checout the code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: BUilding code and analyze with SonarQube
-        uses: actions/checkout@master
+      - name:  Building code and analyse with sonarqube
+        uses:  actions/checkout@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      - name: dependencies install
+      - name: dependencies_install
+        run: npm install
+      - name: trivy scan
+        run: trivy fs . > trivyreport.txt
+      - name: sudo docker build push
         run: |
-          npm install
-  deploy:
-    name: deploy app to docker
-    needs: build-analyze-scan
+          sudo docker build -t zomato .
+          sudo docker tag zomato anish0506/zomato.latest
+          sudo docker login -u ${{ secrets.DOCKER_USERNMAE }} -p {{ secrets.DOCKER_TOKEN }}
+          sudo docker push anish0506/zomato.latest
+      - name: trivy scan image
+        run: trivy image anish0506/zomato.latest
+  deploy: 
+    needs: build-analyse-scan
     runs-on: [self-hosted]
     steps:
-      - name: docker pull
-        run: sudo docker pull manlineroot12/zomato:latest
-      - name: Deploy to kubernetes
-        run: kubectl apply -f deployment-service.yml
+      - name: sudo docker pull
+        run: sudo docker pull anish0506/zomato.latest
+      - name: Image scan
+        run: trivy image anish0506/zomato.latest
+      - name: run sudo docker container
+        run: sudo docker run -itd -p 3000:3000 --name  anish0506/zomato.latest
