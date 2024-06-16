@@ -1,4 +1,3 @@
-
 name: build analyse, scan
 on:
   push:
@@ -8,7 +7,7 @@ on:
 jobs:
   build-analyse-scan:
     name: build
-    runs: [self-hosted]
+    runs-on: [self-hosted]
     steps:
       - name: checout the code
         uses: actions/checkout@v4
@@ -17,8 +16,8 @@ jobs:
       - name:  Building code and analyse with sonarqube
         uses:  actions/checkout@master
         env:
-          SONAR_TOKEN: ${{ secert.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secert.SONAR_HOST_URL }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       - name: dependencies_install
         run: npm install
       - name: trivy scan
@@ -27,7 +26,7 @@ jobs:
         run: |
           docker build -t zomato .
           docker tag zomato anish0506/zomato.latest
-          docker login -u ${{ secert.DOCKER_USERNMAE }} -p {{ secert.DOCKER_TOKEN }}
+          docker login -u ${{ secrets.DOCKER_USERNMAE }} -p {{ secrets.DOCKER_TOKEN }}
           docker push anish0506/zomato.latest
       - name: trivy scan image
         run: trivy image anish0506/zomato.latest
