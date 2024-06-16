@@ -11,11 +11,11 @@ jobs:
     runs: [self-hosted]
     steps:
       - name: checout the code
-        uses: action/checkout@v4
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name:  Building code and analyse with sonarqube
-        uses:  action/checkout@master
+        uses:  actions/checkout@master
         env:
           SONAR_TOKEN: ${{ secert.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secert.SONAR_HOST_URL }}
